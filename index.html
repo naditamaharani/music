@@ -61,56 +61,105 @@
 		<a id="prev" href="#" class="muzzy-player-prev"></a>
 		<a id="player" href="#" class="muzzy-player-play"></a>
 		<a id="next" href="#" class="muzzy-player-next"></a>
-		<div class="muzzy-player-wrapbar">
+		<div id="wrapper-bar" class="muzzy-player-wrapbar">
 			<div id="bar" class="muzzy-player-bar">
 				<a class="dot"></a>
 			</div>
 		</div>
+		<button id="half">half</button>
 	</div>
 	<script type="text/javascript">
-		function get(id) {
+
+		function getId(id) {
 			return document.getElementById(id);
 		}
 
-		var position = 0;
-		var musics = ["ed","love","fearless"]; 
+		class MuzzyPlayer {
+			constructor(){
+				//get DOM elements
+				this.btnPlay = getId('player');
 
-		var music = new Audio(musics[position] + ".mp3");
-		var click = 0;
-		var player = get('player');
-		var next = get('next');
-		var prev = get('prev');
+				this.i = 0;
+				this.position = 0;
+				this.playlist = ["ed","love","fearless"]; 
 
-		var bar = get('bar');
-		player.addEventListener('click',function(){
-			click++;
-			if(click%2) {
-				music.play();
-				player.style.background = "url('pause.png') no-repeat";
+				this.nowPlaying = new Audio(this.playlist[this.position] + ".mp3");
+			}
+			
+			setCurrentTime(ms){
+				this.nowPlaying.currentTime = ms;
 			}
 
-			else{
-				music.pause();
+			getCurrentTime(){
+				return this.nowPlaying.currentTime;
+			}
+
+			getDuration(){
+				return this.nowPlaying.duration;
+			}
+
+			play(){
+				this.nowPlaying.play();
+				this.btnPlay.style.background = "url('pause.png') no-repeat";
+			}
+
+			pause(){
+				this.nowPlaying.pause();
 				player.style.background = "url('play.png') no-repeat";
-				
 			}
+
+			next(){
+				this.position++;
+				if(this.position==this.playlist.length) this.position = 0;
+				this.nowPlaying.src = this.playlist[this.position] + ".mp3";
+				this.play(); 
+			}
+
+			prev(){
+				this.position--;
+				if(this.position==-1) this.position = this.playlist.length-1;
+				this.nowPlaying.src = this.playlist[this.position] + ".mp3";
+				this.play(); 
+			}
+
+
+		}
+
+		var MZPlayer = new MuzzyPlayer();
+
+		var btnPlay = getId('player');
+		var btnNext = getId('next');
+		var btnPrev = getId('prev');
+		var bar = getId('bar');
+		var half = getId('half');
+
+		half.addEventListener('click', function(){
+			MZPlayer.nowPlaying.currentTime = MZPlayer.nowPlaying.duration / 2;
 		});
 
-		next.addEventListener('click',function(){
-			position++;
-			music.src = musics[position] + ".mp3"; 
+		var i = 0;
+
+		//add eventListener to DOMs
+		btnPlay.addEventListener('click',function(){
+			i++;
+			if(i%2) MZPlayer.play();
+			else	MZPlayer.pause();
+		});
+
+		btnNext.addEventListener('click',function(){
+			MZPlayer.next();
 		});
 
 
-		prev.addEventListener('click',function(){
-			position--;
-			music.src = musics[position] + ".mp3"; 
+		btnPrev.addEventListener('click',function(){
+			MZPlayer.prev();
 		});
 
-		music.addEventListener('timeupdate',function(){
-		    var currentTimeMs = music.currentTime;
-		    bar.style.width = (currentTimeMs/music.duration)*320 + "px";
-		},false);
+		MZPlayer.nowPlaying.addEventListener('timeupdate', function(){
+		    bar.style.width = (MZPlayer.getCurrentTime() / MZPlayer.getDuration()) * 320 + "px";
+		}, false);
+		
+
 	</script>
 </body>
 </html>
