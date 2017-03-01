@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SIMPLE PLAYER</title>
+	<style type="text/css">
+		.muzzy-player-wrapper {
+			height: 80px;
+			background: #0f62a5;
+		}
+
+		.muzzy-player-prev,.muzzy-player-next,.muzzy-player-play {
+			display: block;
+			float: left;
+			width: 35px;
+			height: 35px;
+		}
+
+		.muzzy-player-prev {
+			background: url("skip.png") no-repeat;
+		}
+		.muzzy-player-next {
+			background: url("skip2.png") no-repeat;
+		}
+		.muzzy-player-play {
+			width: 65px;
+			height: 65px;
+			background: url("play.png") no-repeat;
+		}
+
+		.muzzy-player-wrapbar{
+			height: 5px;
+			width: 320px;
+			background: #CCC;
+			float: left;
+			position: relative;
+			top: 50%;
+		}
+
+		.muzzy-player-bar{
+			height: 5px;
+			width: 20px;
+			background: #FFF;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+
+		.dot{
+			background: #EEE;
+			position: absolute;
+			top: -50%;
+			right: -5px;
+			width: 10px;
+			height: 10px;
+			border-radius: 50px;
+		}
+	</style>
+</head>
+<body>
+	<div class="muzzy-player-wrapper">
+		<a id="prev" href="#" class="muzzy-player-prev"></a>
+		<a id="player" href="#" class="muzzy-player-play"></a>
+		<a id="next" href="#" class="muzzy-player-next"></a>
+		<div class="muzzy-player-wrapbar">
+			<div id="bar" class="muzzy-player-bar">
+				<a class="dot"></a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		function get(id) {
+			return document.getElementById(id);
+		}
+
+		var position = 0;
+		var musics = ["ed","love","fearless"]; 
+
+		var music = new Audio(musics[position] + ".mp3");
+		var click = 0;
+		var player = get('player');
+		var next = get('next');
+		var prev = get('prev');
+
+		var bar = get('bar');
+		player.addEventListener('click',function(){
+			click++;
+			if(click%2) {
+				music.play();
+				player.style.background = "url('pause.png') no-repeat";
+			}
+
+			else{
+				music.pause();
+				player.style.background = "url('play.png') no-repeat";
+				
+			}
+		});
+
+		next.addEventListener('click',function(){
+			position++;
+			music.src = musics[position] + ".mp3"; 
+		});
+
+
+		prev.addEventListener('click',function(){
+			position--;
+			music.src = musics[position] + ".mp3"; 
+		});
+
+		music.addEventListener('timeupdate',function(){
+		    var currentTimeMs = music.currentTime;
+		    bar.style.width = (currentTimeMs/music.duration)*320 + "px";
+		},false);
+	</script>
+</body>
+</html>
